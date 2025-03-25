@@ -91,7 +91,7 @@ add_eur_rate <- function(transactions) {
             tibble(time = timestr),
             price_data,
             by = join_by(closest(time < stamp))
-          )$value_low
+          )$value
           row$eur_rate <- closest_price
         } else {
           row$eur_rate <- NA
