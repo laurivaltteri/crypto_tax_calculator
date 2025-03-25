@@ -1,7 +1,86 @@
-# crypto_tax_calculator
-Compute the taxable profits from divly style .csv:s.  
-And scripts to transform exported exchange form various exchanges to unified divly style tables.
+# 🧾 crypto_tax_calculator
+
+A lightweight and extensible R-based tool for calculating taxable profits from cryptocurrency transactions, using FIFO (First-In-First-Out) methodology. 
+
+This repo also includes scripts to **normalize export files from multiple exchanges** into a unified format compatible with [Divly](https://divly.com/) style `.csv` files, example can be found [here](https://docs.google.com/spreadsheets/d/1jGvqnK8OxwcjwpobwkP1k4jj8Sk9OHTEO5WgKIBKbTU/).
+
+---
+
+## 📦 Features
+
+- 🔄 **Data Normalization**  
+  Scripts to clean and convert exported data from various exchanges (e.g. Kraken, Binance) to a common format.
+
+- 💶 **EUR Valuation**  
+  Adds EUR values to crypto-to-crypto trades using:
+  - Yahoo Finance API for historical fiat conversions
+  - Kraken OHLC API for price data from the right source
+  - Manual rates can be added for unsupported assets (e.g., VEN, ERD)
+
+- 📈 **FIFO-Based Profit Computation**  
+  Realized and deemed profits calculated per transaction using FIFO matching of acquisition cost.
+
+- 📂 **Modular Architecture**  
+  Functions are decoupled and well-documented for easy inspection and testing.
+
+---
+
+## 🛠️ Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/crypto_tax_calculator.git
+   ```
+
+2. Open in RStudio or your preferred R environment.
+3. Init `renv`
+
+## 🚀 Usage
+Example Workflow
+1. Convert exchange exports to Divly-style CSVs using scripts in R/*_schema.R.
+2. Load and process your data:
+```r
+source("R/fifo_script.R")
+
+# Assuming 'combined.csv' is your merged, normalized transaction file
+df <- read.csv("data/combined.csv")
+
+df_with_rates <- add_eur_rate(df)
+df_with_profits <- compute_fifo_profits(df_with_rates)
+```
+3. Inspect or export your final data:
+```r
+View(df_with_profits)
+write.csv(df_with_profits, "results/crypto_profits.csv", row.names = FALSE)
+```
+## ⚠️ Notes & Limitations
+- Kraken OHLC API Limit: The get_ohlc() function retrieves only up to 720 data points. When fetching daily data for long time spans, the script switches to weekly data (see add_eur_rate() for fallback logic).
+- Manual Price Data: Some assets (e.g., NANO, VEN, ERD) are not supported via APIs and require manually maintained price tables (see nano_prices in add_eur_rate()).
+- FIFO Stack Overflows: The system raises warnings if an asset is sold without sufficient acquisition history (i.e., empty FIFO stack).
+
+📁 Project Structure
+```graphql
+.
+├── R/
+│   ├── add_eur_rate.R         # Adds EUR valuation to each trade
+│   ├── compute_fifo_profits.R# FIFO-based profit calculation
+│   ├── get_ohlc.R             # Kraken OHLC data retrieval
+│   ├── get_crypto_yahoo.R     # Yahoo price fetcher
+│   └── fifo_script.R          # Example glue script
+├── data/
+│   └── combined.csv           # Normalized transaction data
+├── results/
+│   └── crypto_profits.csv     # Output
+└── README.md
+```
+
+##🧪 Example
+```r
+source("R/fifo_script.R")
+# Results saved to: results/crypto_profits.csv
+```
+
+## 📄 License
+MIT License. Feel free to use and adapt.
 
 
-NOTES:
-WHEN CALCULATING FIFO IN THE FUTURE: As only 720 entries is retrieved with get_ohlc_kraken() function remember to adjust the start of daily values retrieval accordingly (see add_eur_rate() function for details).
