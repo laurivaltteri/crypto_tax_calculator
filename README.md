@@ -40,10 +40,8 @@ Example Workflow
 1. Convert exchange exports to Divly-style CSVs using scripts in R/*_schema.R.
 2. Load and process your data:
 ```r
-source("R/fifo_script.R")
-
 # Assuming 'combined.csv' is your merged, normalized transaction file
-df <- read.csv("data/combined.csv")
+df <- read_csv("data/combined.csv")
 
 df_with_rates <- add_eur_rate(df)
 df_with_profits <- compute_fifo_profits(df_with_rates)
@@ -51,7 +49,7 @@ df_with_profits <- compute_fifo_profits(df_with_rates)
 3. Inspect or export your final data:
 ```r
 View(df_with_profits)
-write.csv(df_with_profits, "results/crypto_profits.csv", row.names = FALSE)
+write_csv(df_with_profits, "results/crypto_profits.csv", row.names = FALSE)
 ```
 ## ⚠️ Notes & Limitations
 - Kraken OHLC API Limit: The get_ohlc() function retrieves only up to 720 data points. When fetching daily data for long time spans, the script switches to weekly data (see add_eur_rate() for fallback logic).
@@ -63,12 +61,16 @@ write.csv(df_with_profits, "results/crypto_profits.csv", row.names = FALSE)
 .
 ├── R/
 │   ├── add_eur_rate.R         # Adds EUR valuation to each trade
-│   ├── compute_fifo_profits.R# FIFO-based profit calculation
-│   ├── get_ohlc.R             # Kraken OHLC data retrieval
+│   ├── compute_fifo_profits.R # FIFO-based profit calculation
+│   ├── get_ohlc_kraken.R      # Kraken OHLC data retrieval
 │   ├── get_crypto_yahoo.R     # Yahoo price fetcher
+│   ├── *_divly_schema.R       # Varous examples to read in data
 │   └── fifo_script.R          # Example glue script
 ├── data/
-│   └── combined.csv           # Normalized transaction data
+│   └── divly/
+│   │   └── *.divly.csv        # Normalized transaction data
+│   └── raw/
+│       └── <from_source>.csv  # Exported data
 ├── results/
 │   └── crypto_profits.csv     # Output
 └── README.md
@@ -77,7 +79,7 @@ write.csv(df_with_profits, "results/crypto_profits.csv", row.names = FALSE)
 ##🧪 Example
 ```r
 source("R/fifo_script.R")
-# Results saved to: results/crypto_profits.csv
+# produces table similar to Vero FIFO table
 ```
 
 ## 📄 License
