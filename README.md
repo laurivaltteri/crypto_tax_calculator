@@ -56,7 +56,7 @@ write_csv(df_with_profits, "results/crypto_profits.csv", row.names = FALSE)
 - Manual Price Data: Some assets (e.g., NANO, VEN, ERD) are not supported via APIs and require manually maintained price tables (see nano_prices in add_eur_rate()).
 - FIFO Stack Overflows: The system raises warnings if an asset is sold without sufficient acquisition history (i.e., empty FIFO stack).
 
-📁 Project Structure
+## 📁 Project Structure
 ```graphql
 .
 ├── R/
@@ -76,7 +76,7 @@ write_csv(df_with_profits, "results/crypto_profits.csv", row.names = FALSE)
 └── README.md
 ```
 
-##🧪 Example
+## 🧪 Example
 ```r
 source("R/fifo_script.R")
 # produces table similar to Vero FIFO table
