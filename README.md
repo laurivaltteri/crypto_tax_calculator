@@ -29,7 +29,7 @@ This repo also includes scripts to **normalize export files from multiple exchan
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/crypto_tax_calculator.git
+   git clone https://github.com/laurivaltteri/crypto_tax_calculator.git
    ```
 
 2. Open in RStudio or your preferred R environment.
