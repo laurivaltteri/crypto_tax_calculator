@@ -24,6 +24,8 @@
 #'   - If the transaction date is after May 1, 2023, daily data is retrieved from Kraken.
 #'   - If the transaction date is before May 1, 2023, weekly data is retrieved from Kraken.
 #' - Transactions that are not crypto-crypto trades are preserved with `eur_rate = NA`.
+#' 
+#' @seealso Live coinwatch is good location to get values for manually added coins \url{https://www.livecoinwatch.com/}
 #'
 #' @examples
 #' \dontrun{
