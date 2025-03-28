@@ -22,7 +22,7 @@ kraken_unified <-
     received_amount = sum(amount[amount > 0], na.rm = TRUE),
     sent_currency = first(na.omit(asset[amount < 0])),
     sent_amount = abs(sum(amount[amount < 0], na.rm = TRUE)),
-    fee_amount = sum(fee, na.rm = TRUE),
+    fee_amount = first(na.omit(fee[fee > 0])), # there was an issue with double fee on some line
     fee_currency = first(na.omit(asset[fee > 0])),  # From right line
     tx_hash = first(refid),
     custom_description = NA_character_,
