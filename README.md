@@ -37,7 +37,9 @@ This repo also includes scripts to **normalize export files from multiple exchan
 
 ## 🚀 Usage
 Example Workflow
-1. Convert exchange exports to Divly-style CSVs using scripts in R/*_schema.R.
+1. Convert exchange exports to Divly-style CSVs using scripts in `R/*_schema.R`.
+  - For this you will need to upload your exchange exports to `/raw` folder
+  - Then modify the appropoate `R/<exhange>_schema.R` to read and convert your ledger
 2. Load and process your data:
 ```r
 # Assuming 'combined.csv' is your merged, normalized transaction file
