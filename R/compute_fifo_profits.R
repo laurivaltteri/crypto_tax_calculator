@@ -5,6 +5,7 @@
 #' @param transactions A data frame containing cryptocurrency transactions, with EUR rates already added.
 #'   Expected columns:
 #'   - `transaction_type`: should include "Trade" for trades.
+#'     `label`: should include "Staking Earn" for staking rewards.
 #'   - `sent_currency`, `received_currency`: asset symbols.
 #'   - `sent_amount`, `received_amount`: numeric values of amounts transacted.
 #'   - `eur_rate`: EUR conversion rate for non-EUR assets.
@@ -37,9 +38,25 @@ compute_fifo_profits <- function(transactions) {
   for (i in seq_len(nrow(transactions))) {
     row <- transactions[i, ]
     
-    if (row$transaction_type != "Trade") {
+  if (row$transaction_type != "Trade") {
+    if (isTRUE(row$label == 'Staking Earn')) {
+      received_asset <- row$received_currency
+      received_EUR <- row$eur_rate * (row$received_amount - row$fee_amount)
+
+      fifo_stacks[[received_asset]] <- 
+        bind_rows(
+          fifo_stacks[[received_asset]],
+          tibble(
+            amount = row$received_amount,
+            price = received_EUR / row$received_amount
+            )
+          )
       next
-    }
+    } else
+    next
+  }
+
+
     
     asset <- row$sent_currency
     received_asset <- row$received_currency
