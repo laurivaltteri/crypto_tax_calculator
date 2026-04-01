@@ -23,8 +23,10 @@
 #'   date = as.Date("2023-01-01"),
 #'   time = "12:00:00",
 #'   received_currency = "ETH",
-#'   label = "Staking Earn",
-#'   exchange = "kraken"
+#'   received_amount = 0.0005,
+#'   label = "Staking Reward",
+#'   exchange = "kraken",
+#'   eur_rate = NA_real_
 #' )
 #' 
 #' add_kraken_staking(transactions)
@@ -40,15 +42,15 @@ add_kraken_staking <- function(transactions) {
     received_currency <- row$received_currency[[1]]
 		eur_rate <- row$eur_rate[[1]]
 
-    if (!is.na(label) && label == "Staking Earn" && is.na(eur_rate)) {
+    if (!is.na(label) && label == "Staking Reward" && is.na(eur_rate)) {
 			cat("Staking reward on row: ", i, "\n")
       timestr <- lubridate::ymd_hms(paste(row$date[[1]], row$time[[1]]))
 			cat("Fetching rate from Kraken API\n")
       price_data <- if (timestr > lubridate::ymd("2024-01-01")) {
         get_ohlc(paste0(received_currency, "EUR"), 0, interval = 1440)
       } else {
-        timeint <- as.numeric(timestr) - (86400 * 7)
-        get_ohlc(paste0(received_currency, "EUR"), timeint)
+        timeint <- as.numeric(timestr) - (86400 * 15)
+        get_ohlc(paste0(received_currency, "EUR"), timeint, interval = 21600)
       }
 
       if (!is.null(price_data) && nrow(price_data) > 0) {

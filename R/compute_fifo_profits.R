@@ -39,7 +39,7 @@ compute_fifo_profits <- function(transactions) {
     row <- transactions[i, ]
     
   if (row$transaction_type != "Trade") {
-    if (isTRUE(row$label == 'Staking Earn')) {
+    if (isTRUE(row$label = "Staking Reward")) {
       received_asset <- row$received_currency
       received_EUR <- row$eur_rate * (row$received_amount - row$fee_amount)
 

@@ -1,12 +1,17 @@
 ## Main FIFO profit calculation script
-#
+# This script gives you a schema for how to use the 
+# functions in this package to compute FIFO profits 
+# for your crypto transactions.
 
 
 # read functions
 source("R/add_eur_rate.R")
+source("R/add_kraken_staking.R")
 source("R/compute_fifo_profits.R")
 source("R/get_crypto_yahoo.R")
 source("R/get_ohlc_kraken.R")
+source("R/compute_staking_earnings.R")
+
 
 # tidyvee
 library(tidyverse)
@@ -39,8 +44,16 @@ all_exchanges <-
 # add EUR link to crypto-crypto trades
 all_with_eurrate <- add_eur_rate(all_exchanges)
 
+# add EUR rate also for kraken staking rewards
+all_with_eurrate <- add_kraken_staking(all_with_eurrate)
+all_with_eurrate <- add_kraken_staking(all_with_eurrate) # run twice for unstable API
+
+
 # compute the fifo profits
 results <- compute_fifo_profits(all_with_eurrate)
+
+# compute staking earnings
+stake_income <- compute_staking_earnings(all_with_eurrate)
 
 ################## --- ###
 
@@ -81,4 +94,28 @@ tax_fifo <-
     voitto_tappio = profit_final,
     realisoitua_jaljella = sold_currency_stack,
     hankittua_jaljella = received_currency_stack
+  )
+
+################## --- ###
+## Some summary tables for sanity checking
+tax_fifo |> 
+  mutate(year = lubridate::year(aika)) |> 
+  group_by(year) |> 
+  summarise(
+    voitto = sum(voitto_tappio, na.rm = TRUE)
+  )
+
+##
+stake_income |>
+  transmute(
+    aika = ymd_hms(paste(date, time)),
+    realisoitu_valuutta = received_currency,
+    todellinen_hankintameno = 0,
+    hankintameno_olettama = 0,
+    tuotto = eur_rate*received_amount
+  ) |> 
+  mutate(vuosi = lubridate::year(aika)) |> 
+  group_by(vuosi) |> 
+  summarise(
+    tuotto = sum(tuotto, na.rm = TRUE)
   )

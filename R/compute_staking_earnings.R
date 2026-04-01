@@ -1,7 +1,7 @@
 #' Compute EUR Earnings from Staking Rewards
 #'
 #' This function computes staking earnings in EUR from rows labeled
-#' `"Staking Earn"`.
+#' `"Staking Reward"`.
 #'
 #' @param transactions A data frame containing transaction rows.
 #'   Expected columns:
@@ -10,7 +10,7 @@
 #'   - `fee_amount`
 #'   - `eur_rate`
 #'
-#' @return A data frame containing only `"Staking Earn"` rows and one extra column:
+#' @return A data frame containing only `"Staking Reward"` rows and one extra column:
 #'   - `staking_earnings_eur`: `(received_amount - fee_amount) * eur_rate`
 #'
 #' @details
@@ -19,13 +19,13 @@
 #'
 #' @examples
 #' \dontrun{
-#' staking <- compute_staking_earnings(all_with_eurrate_kraken_staking)
+#' staking <- compute_staking_earnings(all_exchange_rewards)
 #' }
 #'
 #' @export
 compute_staking_earnings <- function(transactions) {
   transactions |>
-    dplyr::filter(label %in% "Staking Earn") |>
+    dplyr::filter(label %in% "Staking Reward") |>
     dplyr::mutate(
       staking_earnings_eur = (received_amount - dplyr::coalesce(fee_amount, 0)) * eur_rate
     )
