@@ -57,6 +57,7 @@ add_eur_rate <- function(transactions) {
     row <- transactions[i, ]
     sent_currency <- row$sent_currency
     received_currency <- row$received_currency
+    #browser()
     
     if (row$transaction_type == "Trade" && received_currency != "EUR" && sent_currency != "EUR") {
       cat("Crypto-to-crypto trade on row: ", i, "\n")

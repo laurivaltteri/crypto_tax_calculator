@@ -1,15 +1,17 @@
 ## Read Kraken ledger and trades and transform to divly compatible format
 # https://docs.google.com/spreadsheets/d/1jGvqnK8OxwcjwpobwkP1k4jj8Sk9OHTEO5WgKIBKbTU/
 
+library(tidyverse)
+
 # kraken ledger + trades
-krakenlfile <- "data/raw/<kraken_ledger.csv>"
+krakenlfile <- "../data/raw/ledgers_15-24.csv"
 kraken_ledger <- readr::read_csv(krakenlfile)
-krakenlfile <- "data/raw/<kraken_trades.csv>"
+krakentfile <- "../data/raw/trades_15-24.csv"
 kraken_trades <- readr::read_csv(krakentfile)
 
+  # filter(!refid %in% err) |> 
 kraken_unified <-
   kraken_ledger |> 
-  filter(!refid %in% err) |> 
   filter(type == "trade") |> 
   select(refid, time, type, asset, amount, fee, balance) |> 
   group_by(refid) |>
@@ -97,5 +99,5 @@ kraken_unified <-
   ) |> 
   arrange(date, time)
 
-krkn_csv_file <- "data/divly/kraken.divly.csv"
+krkn_csv_file <- "../data/divly/kraken.divly.csv"
 kraken_unified |> write_csv(krkn_csv_file, na="")
