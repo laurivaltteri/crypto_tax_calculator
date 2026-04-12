@@ -122,6 +122,6 @@ compute_fifo_profits <- function(transactions) {
     
     results[[i]] <- row
   }
-  
+  browser()
   return(bind_rows(results))
 }

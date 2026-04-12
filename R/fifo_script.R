@@ -132,8 +132,8 @@ tax_fifo <-
 tax_fifo |> write_csv("../output/lactc_tax_fifo.csv", na="")
 
 # tax_fifo |> 
-#   filter(lubridate::year(aika)==2024) |> 
-#   write_csv("../output/tax_fifo_2024.csv", na="")
+#   filter(lubridate::year(aika)==2025) |> 
+#   write_csv("../output/tax_fifo_2025.csv", na="")
 
 tax_fifo |> 
   mutate(year = lubridate::year(aika)) |> 
@@ -145,7 +145,7 @@ tax_fifo |>
 yhteenveto <-
   tax_fifo |> 
   mutate(vuosi = lubridate::year(aika)) |> 
-  filter(vuosi == 2020) |> 
+  filter(vuosi == 2025) |> 
   drop_na(voitto_tappio) |> 
   mutate(
     voitollinen = if_else(voitto_tappio > 0, "voitollisiin", "tappiollisiin")
@@ -161,8 +161,8 @@ yhteenveto <-
     values_from = c(luovutushinnat, hankintamenot, `voitot/tappiot`),
     names_glue = "{voitollinen} kohdistuneet {.value}") |> 
   mutate(
-    `luovutushinnat yht.` = `voitollisiin kohdistuneet luovutushinnat` + `tappiollisiin kohdistuneet luovutushinnat`,
-    `voitto/tappio yht.` = `voitollisiin kohdistuneet voitot/tappiot` + `tappiollisiin kohdistuneet voitot/tappiot`,
+    `luovutushinnat yht.` = `voitollisiin kohdistuneet luovutushinnat`, #+ `tappiollisiin kohdistuneet luovutushinnat`,
+    `voitto/tappio yht.` = `voitollisiin kohdistuneet voitot/tappiot`, #+ `tappiollisiin kohdistuneet voitot/tappiot`,
   ) |> 
   select(
     "luovutushinnat yht.",
@@ -175,8 +175,8 @@ yhteenveto <-
     "voitto/tappio yht."
   )
 
-as_tibble(cbind(vuosi_2020 = names(yhteenveto), t(yhteenveto))) |>
+as_tibble(cbind(vuosi_2025 = names(yhteenveto), t(yhteenveto))) |>
   transmute(
-    vuosi_2020=vuosi_2020,
+    vuosi_2025=vuosi_2025,
     yhteenveto=V2
   )

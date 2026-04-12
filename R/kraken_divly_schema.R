@@ -4,9 +4,9 @@
 library(tidyverse)
 
 # kraken ledger + trades
-krakenlfile <- "../data/raw/ledgers_15-24.csv"
+krakenlfile <- "../data/raw/ledgers_15-25.csv"
 kraken_ledger <- readr::read_csv(krakenlfile)
-krakentfile <- "../data/raw/trades_15-24.csv"
+krakentfile <- "../data/raw/trades_15-25.csv"
 kraken_trades <- readr::read_csv(krakentfile)
 
   # filter(!refid %in% err) |> 
