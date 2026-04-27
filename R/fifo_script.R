@@ -1,11 +1,17 @@
 ## Main FIFO profit calculation script
-#
+# This script gives you a schema for how to use the 
+# functions in this package to compute FIFO profits 
+# for your crypto transactions.
+
 
 # read functions
 source("R/add_eur_rate.R")
+source("R/add_kraken_staking.R")
 source("R/compute_fifo_profits.R")
 source("R/get_crypto_yahoo.R")
 source("R/get_ohlc_kraken.R")
+source("R/compute_staking_earnings.R")
+
 
 # tidyvee
 library(tidyverse)
@@ -40,8 +46,16 @@ all_exchanges <-
 # add EUR link to crypto-crypto trades
 all_with_eurrate <- add_eur_rate(all_exchanges)
 
+# add EUR rate also for kraken staking rewards
+all_with_eurrate <- add_kraken_staking(all_with_eurrate)
+all_with_eurrate <- add_kraken_staking(all_with_eurrate) # run twice for unstable API
+
+
 # compute the fifo profits
 results <- compute_fifo_profits(all_with_eurrate)
+
+# compute staking earnings
+stake_income <- compute_staking_earnings(all_with_eurrate)
 
 ################## --- ###
 
@@ -129,12 +143,8 @@ tax_fifo <-
     hankittua_jaljella = received_currency_stack
   )
 
-tax_fifo |> write_csv("../output/lactc_tax_fifo.csv", na="")
-
-# tax_fifo |> 
-#   filter(lubridate::year(aika)==2025) |> 
-#   write_csv("../output/tax_fifo_2025.csv", na="")
-
+################## --- ###
+## Some summary tables for sanity checking
 tax_fifo |> 
   mutate(year = lubridate::year(aika)) |> 
   group_by(year) |> 
@@ -142,41 +152,17 @@ tax_fifo |>
     voitto = sum(voitto_tappio, na.rm = TRUE)
   )
 
-yhteenveto <-
-  tax_fifo |> 
-  mutate(vuosi = lubridate::year(aika)) |> 
-  filter(vuosi == 2025) |> 
-  drop_na(voitto_tappio) |> 
-  mutate(
-    voitollinen = if_else(voitto_tappio > 0, "voitollisiin", "tappiollisiin")
-  ) |> 
-  group_by(voitollinen, .drop = NA) |> 
-  summarise(
-    luovutushinnat = sum(euro_arvo),
-    hankintamenot = sum(todellinen_hankintameno),
-    `voitot/tappiot` = sum(voitto_tappio)
-  ) |> 
-  pivot_wider(
-    names_from = voitollinen, 
-    values_from = c(luovutushinnat, hankintamenot, `voitot/tappiot`),
-    names_glue = "{voitollinen} kohdistuneet {.value}") |> 
-  mutate(
-    `luovutushinnat yht.` = `voitollisiin kohdistuneet luovutushinnat`, #+ `tappiollisiin kohdistuneet luovutushinnat`,
-    `voitto/tappio yht.` = `voitollisiin kohdistuneet voitot/tappiot`, #+ `tappiollisiin kohdistuneet voitot/tappiot`,
-  ) |> 
-  select(
-    "luovutushinnat yht.",
-    "voitollisiin kohdistuneet luovutushinnat",
-    "voitollisiin kohdistuneet hankintamenot",
-    luovutusvoitot = "voitollisiin kohdistuneet voitot/tappiot",
-    "tappiollisiin kohdistuneet luovutushinnat",
-    "tappiollisiin kohdistuneet hankintamenot" ,
-    luovutustappiot = "tappiollisiin kohdistuneet voitot/tappiot",
-    "voitto/tappio yht."
-  )
-
-as_tibble(cbind(vuosi_2025 = names(yhteenveto), t(yhteenveto))) |>
+##
+stake_income |>
   transmute(
-    vuosi_2025=vuosi_2025,
-    yhteenveto=V2
+    aika = ymd_hms(paste(date, time)),
+    realisoitu_valuutta = received_currency,
+    todellinen_hankintameno = 0,
+    hankintameno_olettama = 0,
+    tuotto = eur_rate*received_amount
+  ) |> 
+  mutate(vuosi = lubridate::year(aika)) |> 
+  group_by(vuosi) |> 
+  summarise(
+    tuotto = sum(tuotto, na.rm = TRUE)
   )

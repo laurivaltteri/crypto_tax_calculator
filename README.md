@@ -62,12 +62,14 @@ write_csv(df_with_profits, "results/crypto_profits.csv", row.names = FALSE)
 ```graphql
 .
 ├── R/
-│   ├── add_eur_rate.R         # Adds EUR valuation to each trade
-│   ├── compute_fifo_profits.R # FIFO-based profit calculation
-│   ├── get_ohlc_kraken.R      # Kraken OHLC data retrieval
-│   ├── get_crypto_yahoo.R     # Yahoo price fetcher
-│   ├── *_divly_schema.R       # Varous examples to read in data
-│   └── fifo_script.R          # Example glue script
+│   ├── add_eur_rate.R             # Adds EUR valuation to each trade
+│   ├── compute_fifo_profits.R     # FIFO-based profit calculation
+│   ├── compute_staking_earnings.R # Staking earnings calculation for Kraken
+│   ├── add_kraken_staking.R       # Adds EUR values to Kraken staking rewards
+│   ├── get_ohlc_kraken.R          # Kraken OHLC data retrieval
+│   ├── get_crypto_yahoo.R         # Yahoo price fetcher
+│   ├── *_divly_schema.R           # Varous examples to read in data
+│   └── fifo_script.R              # Example glue script
 ├── data/
 │   └── divly/
 │   │   └── *.divly.csv        # Normalized transaction data
