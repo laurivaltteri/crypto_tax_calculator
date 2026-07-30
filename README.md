@@ -32,7 +32,7 @@ This repo also includes scripts to **normalize export files from multiple exchan
    git clone https://github.com/laurivaltteri/crypto_tax_calculator.git
    ```
 
-2. Open in RStudio or your preferred R environment.
+2. Open in Positron or your preferred R tool.
 3. Init `renv`
 
 ## 🚀 Usage
